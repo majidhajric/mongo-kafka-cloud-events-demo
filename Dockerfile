@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM openjre:17
 ARG JAR_FILE=./target/*.jar
 COPY ${JAR_FILE} /opt/demo/app.jar
 EXPOSE 8080
