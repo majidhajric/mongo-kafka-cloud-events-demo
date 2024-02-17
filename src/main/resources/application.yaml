@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://documents:password@localhost:27017/documents?replicaSet=rs0;uuidRepresentation=STANDARD;authSource=admin;
+      database: documents
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    events-topic: events
+
+logging:
+  level:
+    org.springframework.data: info
+    org.springframework.data.mongodb: debug
+    com.example.mongodemo: debug
