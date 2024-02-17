@@ -2,16 +2,10 @@ spring:
 
   data:
     mongodb:
+      uri: mongodb://localhost:27017/test?replicaSet=rs0;uuidRepresentation=STANDARD;
       host: localhost
-      port: 27017
-      uri: mongodb://documents:password@localhost:27017/documents?replicaSet=rs0;uuidRepresentation=STANDARD;authSource=admin;
-      database: documents
+      database: test
 
   kafka:
     bootstrap-servers: localhost:9092
     events-topic: events-topic
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 4.4.0
