@@ -1,4 +1,3 @@
 # mongo-kafka-cloud-events-demo
 
-This project demonstrates publishing cloud events to kafka topic on mongo save action.
-It also uses testcontainers for mongo and kafka.
+Spring Boot application that demonstrates publishing CloudEvents to a Kafka topic when documents are saved to MongoDB.

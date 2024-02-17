@@ -24,6 +24,7 @@ public class KafkaProducerConfig {
 
     @Value("${spring.kafka.events-topic}")
     private String eventsTopic;
+
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
@@ -48,7 +49,6 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, CloudEvent> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
-
 
     @Bean
     public NewTopic eventsTopic() {

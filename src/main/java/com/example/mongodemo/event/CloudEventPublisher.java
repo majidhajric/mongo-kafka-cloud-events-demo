@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 public class CloudEventPublisher {
 
     private final KafkaTemplate<String, CloudEvent> kafkaTemplate;
+
     @Value("${spring.kafka.events-topic}")
     private String eventsTopic;
 
