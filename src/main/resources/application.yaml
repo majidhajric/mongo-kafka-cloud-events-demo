@@ -5,8 +5,8 @@ spring:
       database: documents
 
   kafka:
-    bootstrap-servers: localhost:29092
-    events-topic: events
+    bootstrap-servers: localhost:29092, localhost:29093
+    events-topic: document-events
 
 logging:
   level:

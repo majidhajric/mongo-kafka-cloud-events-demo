@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Document(collection = "documents")
@@ -16,7 +17,7 @@ public class DocumentResource {
 
     @Id
     @Field("id")
-    private String id;
+    private UUID id;
     @Indexed(unique = true)
     private String name;
     @Field("type")

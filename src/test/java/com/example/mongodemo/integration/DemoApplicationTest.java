@@ -56,7 +56,7 @@ public class DemoApplicationTest {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", () -> mongoDBContainer.getReplicaSetUrl() + "&retryWrites=true&ssl=true&maxIdleTimeMS=5000");
+        registry.add("spring.data.mongodb.uri", () -> mongoDBContainer.getReplicaSetUrl() + "?uuidRepresentation=STANDARD;");
         registry.add("spring.kafka.bootstrap-servers", () -> kafkaContainer.getBootstrapServers());
     }
 
@@ -64,7 +64,6 @@ public class DemoApplicationTest {
     @Test
     void saveTest() {
         DocumentResource document = new DocumentResource();
-        document.setId("1");
         document.setType("Exception");
         document.setName("Exception");
         document.setContent("test".getBytes());
@@ -80,7 +79,6 @@ public class DemoApplicationTest {
         assertEquals(0, documentsRepository.findAll().size());
 
         DocumentResource document = new DocumentResource();
-        document.setId("1");
         document.setType("Exception");
         document.setName("Exception");
         document.setContent("test".getBytes());

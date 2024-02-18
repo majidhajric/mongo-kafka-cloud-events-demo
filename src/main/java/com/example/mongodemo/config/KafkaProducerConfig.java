@@ -54,6 +54,7 @@ public class KafkaProducerConfig {
     public NewTopic eventsTopic() {
         return TopicBuilder
                 .name(eventsTopic)
+                .partitions(2)
                 .build();
     }
 }
