@@ -1,23 +1,22 @@
 package com.example.mongodemo.document;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Data
 @Document(collection = "documents")
 public class DocumentResource {
 
-    @Id
+    @MongoId
     @Field("id")
-    private UUID id;
+    private String id;
     @Indexed(unique = true)
     private String name;
     @Field("type")

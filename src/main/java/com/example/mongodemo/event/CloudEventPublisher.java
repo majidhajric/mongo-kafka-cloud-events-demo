@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.UUID;
 
 @Slf4j
@@ -36,17 +35,19 @@ public class CloudEventPublisher {
     }
 
     @EventListener(value = AfterSaveEvent.class)
-    public void onAfterSave(AfterSaveEvent<DocumentResource> event) throws URISyntaxException, JsonProcessingException {
+    public void onAfterSave(AfterSaveEvent<DocumentResource> event) throws JsonProcessingException {
         DocumentResource documentResource = event.getSource();
+        boolean isNew = documentResource.getVersion() == 0;
+        String eventType = isNew ? "com.example.document.created" : "com.example.document.updated";
         log.debug("Received event message: {}", documentResource);
         String host = ServletUriComponentsBuilder.fromCurrentRequestUri().build().getHost();
         assert host != null;
         CloudEventBuilder builder = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withSource(URI.create(host))
-                .withType("com.example.document.created")
+                .withType(eventType)
                 .withDataSchema(URI.create(host + "/schemas/document.json"))
-                .withSubject(documentResource.getId().toString());
+                .withSubject(documentResource.getId());
 
         builder.withData(objectMapper.writeValueAsBytes(documentResource));
         builder.withContextAttribute("principal", "anonymous");
