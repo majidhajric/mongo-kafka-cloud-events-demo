@@ -2,90 +2,39 @@ version: '3.1'
 
 services:
 
-  zookeeper:
-    image: bitnami/zookeeper
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - '2181:2181'
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ALLOW_ANONYMOUS_LOGIN: 'yes'
-      ZOOKEEPER_TICK_TIME: 2000
+  dind:
+    image: docker
+    container_name: dind
+    privileged: true
     restart: always
-
-  broker-node-1:
-    image: bitnami/kafka
-    container_name: broker-node-1
-    depends_on:
-      - zookeeper
-    ports:
-      - "29092:29092"
     environment:
-      BROKER_ID: 1
-      KAFKA_PORT: 9092
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENERS: EXTERNAL_SAME_HOST://:29092, INTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker-node-1:9092, EXTERNAL_SAME_HOST://localhost:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL_SAME_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      JMX_PORT: 9999
+      - DOCKER_TLS_CERTDIR=""
+    networks:
+      - dind-network
 
-  broker-node-2:
-    image: bitnami/kafka
-    container_name: broker-node-2
-    depends_on:
-      - zookeeper
-    ports:
-      - "29093:29093"
-    environment:
-      BROKER_ID: 2
-      KAFKA_PORT: 9093
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENERS: EXTERNAL_SAME_HOST://:29093, INTERNAL://:9093
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker-node-2:9093, EXTERNAL_SAME_HOST://localhost:29093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL_SAME_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      JMX_PORT: 10000
-
-  kafka-ui:
-    image: obsidiandynamics/kafdrop
-    ports:
-      - "9100:9000"
-    environment:
-      - KAFKA_BROKERCONNECT=broker-node-1:9092, broker-node-2:9093
-      - JVM_OPTS=-Xms32M -Xmx64M
-    depends_on:
-      - broker-node-1
-      - broker-node-2
-
-  mongo:
-    image: mongo
-    container_name: mongo
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--keyFile", "/tmp/mongodb.key" ]
+  app:
+    container_name: app
+    image: app
     restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DOCKER_HOST: /var/run/docker.sock #tcp://dind:2376
+    stop_signal: SIGKILL
+    stdin_open: true
+    tty: true
+    working_dir: $PWD
+    networks:
+      - dind-network
+      - default
     volumes:
-      - ./mongodb.key:/tmp/mongodb.key
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}) }" | mongosh -u root -p example --port 27017 --quiet
-      interval: 5s
-      timeout: 30s
-      retries: 30
+      - $PWD:$PWD
+      - $HOME/.m2:/repository
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - dind
 
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - "9081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/?directConnection=true
+networks:
+  dind-network:
+    driver: bridge

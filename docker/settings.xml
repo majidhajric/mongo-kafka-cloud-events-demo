@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>/repository</localRepository>
+    <!-- I removed all the commends to save space in this blog-->
+    <pluginGroups>
+    </pluginGroups>
+    <proxies>
+    </proxies>
+    <servers>
+    </servers>
+    <mirrors>
+    </mirrors>
+    <profiles>
+    </profiles>
+</settings>
