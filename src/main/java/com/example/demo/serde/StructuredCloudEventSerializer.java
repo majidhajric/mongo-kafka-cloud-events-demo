@@ -8,21 +8,21 @@
  *
  */
 
-package com.example.mongodemo.config;
+package com.example.demo.serde;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.format.EventFormat;
+import io.cloudevents.core.provider.EventFormatProvider;
+import io.cloudevents.jackson.JsonFormat;
+import io.cloudevents.kafka.CloudEventSerializer;
 
-@Configuration
-public class ObjectMapperConfig {
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        objectMapper.findAndRegisterModules();
-        return objectMapper;
+public class StructuredCloudEventSerializer extends CloudEventSerializer {
+    @Override
+    public byte[] serialize(String topic, CloudEvent data) {
+        EventFormat format = EventFormatProvider
+                .getInstance()
+                .resolveFormat(JsonFormat.CONTENT_TYPE);
+        assert format != null;
+        return format.serialize(data);
     }
 }

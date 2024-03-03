@@ -1,11 +1,27 @@
+server:
+  port: 0
 spring:
-
+  application:
+    name: documents
   data:
     mongodb:
-      uri: mongodb://localhost:27017/test?replicaSet=rs0;uuidRepresentation=STANDARD;
-      host: localhost
-      database: test
-
+      database: documents
   kafka:
-    bootstrap-servers: localhost:9092
-    events-topic: events-topic
+    producer:
+      transaction-id-prefix: tx-
+    consumer:
+      group-id: ${spring.application.name}
+      enable-auto-commit: false
+      isolation-level: read_committed
+    streams:
+      properties:
+        application.server: localhost:${server.port}
+        state.dir: ${spring.application.name}${server.port}
+    events-topic: document-events
+
+logging:
+  level:
+    org.springframework.data: info
+    org.springframework.data.mongodb: debug
+    org.apache.kafka: debug
+    com.example.demo: debug

@@ -1,4 +1,4 @@
-package com.example.mongodemo.document;
+package com.example.demo.document;
 
 import lombok.Data;
 import org.springframework.data.annotation.PersistenceCreator;
