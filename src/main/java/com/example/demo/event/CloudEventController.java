@@ -24,13 +24,14 @@ import java.net.URI;
 public class CloudEventController {
 
     private final KafkaTemplate<String, CloudEvent> kafkaTemplate;
+
     private final StreamsBuilderFactoryBean streamsBuilderFactoryBean;
     @Value("${spring.kafka.events-topic}")
     private String eventsTopic;
 
     @PostMapping
     @Transactional("kafkaTransactionManager")
-    public void sendMessage(final CloudEvent event) {
+    public void publish(final CloudEvent event) {
         log.info("Sending kafka event: {}", event);
         String subject = event.getSubject();
         assert subject != null;
