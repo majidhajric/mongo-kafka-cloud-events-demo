@@ -1,5 +1,6 @@
 package com.example.demo.event;
 
+import com.example.demo.utils.RequestUtils;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.v1.CloudEventBuilder;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,8 +34,10 @@ public class CloudEventController {
         log.info("Sending kafka event: {}", event);
         String subject = event.getSubject();
         assert subject != null;
+        URI source = URI.create(RequestUtils.getClientIpAddressIfServletRequestExist());
         CloudEvent cloudEvent = new CloudEventBuilder(event)
                 .withSubject(subject)
+                .withSource(source)
                 .build();
         kafkaTemplate.send(eventsTopic, subject, cloudEvent);
     }
